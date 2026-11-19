@@ -10,7 +10,6 @@ import {
   AUDIT_SECTIONS,
   calculateAudit,
   AuditRecord,
-  SAMPLE_AUDIT,
 } from "@/lib/audit-data";
 import { saveAudit, getAuditsList } from "@/lib/audit-storage";
 
@@ -68,12 +67,6 @@ export default function ClinicalNutritionIntakePage() {
 
   const handleBusinessChange = (fields: Partial<ClientDetails>) => {
     setBusiness((prev) => ({ ...prev, ...fields }));
-  };
-
-  const handleLoadSampleClient = () => {
-    setBusiness({ ...SAMPLE_AUDIT.business });
-    setAnswers({ ...SAMPLE_AUDIT.answers });
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleGenerateReport = async () => {
@@ -147,7 +140,6 @@ export default function ClinicalNutritionIntakePage() {
             onAnswer={handleAnswer}
             onGenerateReport={handleGenerateReport}
             currentScore={liveScore}
-            onLoadSampleClient={handleLoadSampleClient}
           />
         ) : (
           <AuditCompleteStep
