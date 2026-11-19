@@ -8,8 +8,8 @@ interface ReportWhatsAppCtaProps {
   record: AuditRecord;
 }
 
-const RETHINK_SUPPORT_PHONE = "917275895385";
-const RETHINK_DISPLAY_PHONE = "+91 7275895385";
+const RETHINK_SUPPORT_PHONE = "918368052044";
+const RETHINK_DISPLAY_PHONE = "+91 8368052044";
 
 export function ReportWhatsAppCta({ record }: ReportWhatsAppCtaProps) {
   const handleConnectWhatsApp = () => {
