@@ -126,7 +126,8 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search")?.trim() || "";
     const category = searchParams.get("category")?.trim() || "";
-    const limit = Math.min(parseInt(searchParams.get("limit") || "50", 10), 100);
+    const limit = Math.min(parseInt(searchParams.get("limit") || "5", 10), 100);
+    const offset = Math.max(parseInt(searchParams.get("offset") || "0", 10), 0);
 
     const where: any = {};
     if (search) {
@@ -140,22 +141,26 @@ export async function GET(req: NextRequest) {
       where.category = category;
     }
 
-    const records = await (prisma as any).rethinkNutriAudit.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      take: limit,
-      select: {
-        id: true,
-        businessName: true,
-        category: true,
-        locality: true,
-        whatsappNumber: true,
-        totalScore: true,
-        bandTitle: true,
-        createdAt: true,
-        viewCount: true,
-      },
-    });
+    const [totalCount, records] = await Promise.all([
+      (prisma as any).rethinkNutriAudit.count({ where }),
+      (prisma as any).rethinkNutriAudit.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: offset,
+        take: limit,
+        select: {
+          id: true,
+          businessName: true,
+          category: true,
+          locality: true,
+          whatsappNumber: true,
+          totalScore: true,
+          bandTitle: true,
+          createdAt: true,
+          viewCount: true,
+        },
+      }),
+    ]);
 
     return NextResponse.json({
       success: true,
@@ -170,7 +175,8 @@ export async function GET(req: NextRequest) {
         date: r.createdAt.toISOString(),
         viewCount: r.viewCount,
       })),
-      total: records.length,
+      total: totalCount,
+      hasMore: offset + records.length < totalCount,
     });
   } catch (error: any) {
     console.error("Error listing nutrition audits:", error);

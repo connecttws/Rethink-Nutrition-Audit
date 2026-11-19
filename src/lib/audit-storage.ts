@@ -190,28 +190,70 @@ export async function resolveAuditAsync(
   return SAMPLE_AUDIT;
 }
 
-export async function fetchAuditsListFromApi(): Promise<
-  Array<{
-    id: string;
-    name: string;
-    category: string;
-    locality?: string;
-    whatsappNumber?: string;
-    date: string;
-    score: number;
-    bandTitle?: string;
-  }>
-> {
+export interface AuditListItem {
+  id: string;
+  name: string;
+  category: string;
+  locality?: string;
+  whatsappNumber?: string;
+  date: string;
+  score: number;
+  bandTitle?: string;
+}
+
+export interface AuditsListResponse {
+  audits: AuditListItem[];
+  total: number;
+  hasMore: boolean;
+}
+
+export async function fetchAuditsListFromApi(options?: {
+  limit?: number;
+  offset?: number;
+  search?: string;
+}): Promise<AuditsListResponse> {
+  const limit = options?.limit ?? 5;
+  const offset = options?.offset ?? 0;
+  const search = options?.search?.trim() ?? "";
+
   try {
-    const res = await fetch("/api/audits");
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      offset: offset.toString(),
+    });
+    if (search) params.set("search", search);
+
+    const res = await fetch(`/api/audits?${params.toString()}`);
     if (res.ok) {
       const data = await res.json();
       if (data.success && Array.isArray(data.audits)) {
-        return data.audits;
+        return {
+          audits: data.audits,
+          total: typeof data.total === "number" ? data.total : data.audits.length,
+          hasMore: Boolean(data.hasMore),
+        };
       }
     }
   } catch (err) {
     console.warn("API fetch failed for audits list:", err);
   }
-  return getAuditsList();
+
+  // Fallback to local storage
+  const allLocal = getAuditsList();
+  const filtered = search
+    ? allLocal.filter((item) => {
+        const q = search.toLowerCase();
+        return (
+          item.name.toLowerCase().includes(q) ||
+          item.category.toLowerCase().includes(q)
+        );
+      })
+    : allLocal;
+
+  const pageItems = filtered.slice(offset, offset + limit);
+  return {
+    audits: pageItems,
+    total: filtered.length,
+    hasMore: offset + limit < filtered.length,
+  };
 }
