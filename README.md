@@ -1,6 +1,6 @@
 # Rethink Nutrition Audit
 
-A clinical nutrition diagnostic, scoring, and client-intake platform built for **Rethink Nutritionists & Coaches** to assess dietary habits, calculate biometrics (BMI, target weight gap), run 360° nutritional audits, and generate personalized nutrition performance reports.
+A clinical nutrition diagnostic, scoring, and client-intake platform built for **Rethink Nutritionists & Dietitians** to assess dietary habits, calculate health biometrics (BMI, target weight gap), run 360° nutritional audits, and generate personalized nutrition performance reports.
 
 ---
 
@@ -21,15 +21,28 @@ A clinical nutrition diagnostic, scoring, and client-intake platform built for *
 
 ---
 
+## 🥗 Clinical Assessment Pillars
+
+The diagnostic engine evaluates client nutrition across 6 core physiological pillars:
+
+1. **Macronutrient Balance & Protein Sufficiency**: Protein distribution per meal, healthy fats ratio, and complex vs. refined carbohydrate consumption.
+2. **Micronutrient Density & Plant Diversity**: Daily intake of colors, leafy greens, seed cycling, and essential vitamin/mineral sources.
+3. **Gut Microbiome & Digestive Vitality**: Bowel consistency, bloat triggers, fermented foods, fiber sufficiency, and elimination frequency.
+4. **Circadian Rhythm & Meal Chronobiology**: Fasting windows, eating past sunset, breakfast timing, and insulin spike mitigation.
+5. **Hydration & Cellular Electrolytes**: Fluid volume, mineral replenishment, caffeine/alcohol offset, and water intake timing.
+6. **Inflammation Triggers & Metabolic Habits**: Seed oils, artificial sweeteners, refined sugar frequency, ultra-processed food reliance, and stress-eating patterns.
+
+---
+
 ## ✨ Key Features
 
 1. **Client Intake & Nutritional Biometrics**:
    - Captures client details, dietary preferences (Vegetarian, Vegan, Non-Veg, Eggetarian), primary nutritional targets, age, and biological sex.
    - Dynamic height (cm / ft+in) and weight inputs with automatic BMI, BMI category, and optimal target weight gap computation.
 
-2. **360° Clinical Nutrition Questionnaire**:
-   - Multi-pillar diagnostic questionnaire evaluating macronutrient balance, micronutrient adequacy, gut health, meal timing, hydration, and metabolic habits.
-   - Weighted question scoring with real-time pillar completion tracking.
+2. **Dual Questionnaire Experience**:
+   - **Continuous Flow**: Rapid questionnaire experience ideal for field assessments and quick consultations.
+   - **Stepped Pillar Flow**: Deep-dive clinical intake with guided question-by-question scoring and badge highlights.
 
 3. **Executive Client Report (`/report` & `/r/[id]`)**:
    - Comprehensive nutrition diagnostic report featuring score gauges, prioritized dietary findings, and personalized nutritional action plans.
@@ -50,7 +63,8 @@ Rethink-Nutrition-Audit/
 │   └── create_rethink_nutrition_audits.sql   # SQL migration / DDL script
 ├── public/                                   # Static icons and assets
 ├── scripts/
-│   └── init-db.mjs                           # Database initialization helper
+│   ├── init-db.mjs                           # Database initialization helper
+│   └── test-db.mjs                           # Database connectivity tester
 ├── src/
 │   ├── app/
 │   │   ├── api/audits/                       # CRUD API routes for audit submissions
