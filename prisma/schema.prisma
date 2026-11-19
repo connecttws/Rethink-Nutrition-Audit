@@ -1,0 +1,78 @@
+// Prisma schema for Rethink Nutrition - Clinical Diet Intake & Metabolic Diagnostic
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["business_audit", "public", "auth"]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+model RethinkNutriAudit {
+  id                    String    @id @default(cuid())
+  slug                  String?   @unique @db.VarChar(150)
+  
+  // Member & Profile
+  businessName          String    @map("business_name") @db.VarChar(255) // Stores Client Full Name
+  clientName            String?   @map("client_name") @db.VarChar(150)
+  category              String    @db.VarChar(100) // Stores Primary Nutritional Target
+  locality              String    @db.VarChar(255) // Stores Diet Preference, Age, Biological Sex
+  phone                 String?   @db.VarChar(50)
+  whatsappNumber        String?   @map("whatsapp_number") @db.VarChar(50)
+  mapsUrl               String?   @map("maps_url") @db.Text
+  auditorName           String    @default("Rethink Nutritionist") @map("auditor_name") @db.VarChar(150)
+
+  // Dedicated Biometrics Fields
+  age                   String?   @db.VarChar(20)
+  height                String?   @db.VarChar(30)
+  weight                String?   @db.VarChar(30)
+  bmi                   String?   @db.VarChar(20)
+  bmiCategory           String?   @map("bmi_category") @db.VarChar(50)
+  primaryGoal           String?   @map("primary_goal") @db.VarChar(150)
+  biometrics            Json?
+
+  // Overall Score & Diagnostic Status
+  totalScore            Int       @map("total_score")
+  maxScore              Int       @default(100) @map("max_score")
+  percentage            Int       @default(0)
+  bandTitle             String    @map("band_title") @db.VarChar(100)
+  bandRange             String    @map("band_range") @db.VarChar(50)
+  bandHeadline          String    @map("band_headline") @db.Text
+  bandDescription       String    @map("band_description") @db.Text
+  sprintRecommendation  String    @map("sprint_recommendation") @db.VarChar(200)
+  sprintDetails         String    @map("sprint_details") @db.Text
+
+  // Dedicated Scores (Pillar 1 to 5 + 6 in JSON and mapsScore..speedScore)
+  mapsScore             Int       @default(0) @map("maps_score") // Protein Score
+  visualsScore          Int       @default(0) @map("visuals_score") // Liquid Calories & Sugar Score
+  webScore              Int       @default(0) @map("web_score") // Weekend Damage Score
+  adsScore              Int       @default(0) @map("ads_score") // Gut Health Score
+  speedScore            Int       @default(0) @map("speed_score") // Night Cravings & Stress Score
+
+  // Full Structured Payloads
+  sectionScores         Json      @map("section_scores")
+  answers               Json
+  findings              Json
+
+  // Engagement & Lifecycle
+  viewCount             Int       @default(0) @map("view_count")
+  lastViewedAt          DateTime? @map("last_viewed_at")
+  sharedViaWhatsAppAt   DateTime? @map("shared_via_whatsapp_at")
+  status                String    @default("active") @db.VarChar(50)
+
+  // Timestamps
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  @@map("rethink_nutri_audit")
+  @@schema("business_audit")
+  @@index([businessName])
+  @@index([whatsappNumber])
+  @@index([category])
+  @@index([totalScore])
+  @@index([createdAt])
+}
